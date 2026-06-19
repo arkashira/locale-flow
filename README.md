@@ -1,2 +1,7 @@
 # locale-flow
-axentx product · A translation pipeline automation tool for development teams to streamline localization services
+
+A tool for running the localization pipeline.
+
+## Quick Start
+
+To run the localization pipeline with a sample project, use the following command:
