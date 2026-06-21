@@ -1,37 +1,62 @@
-import argparse
-import json
 import os
 from dataclasses import dataclass
+from typing import Dict, Any
+
 
 @dataclass
-class TranslationTarget:
-    language: str
-    translations: dict
+class LocaleFlowConfig:
+    api_key: str
+    endpoint: str
+    timeout: int = 30  # default timeout in seconds
 
-def run_translation_pipeline(sample_dir):
-    source_strings = json.load(open(os.path.join(sample_dir, 'source.json')))
-    translation_target = TranslationTarget('en', {})
-    for key, value in source_strings.items():
-        translation_target.translations[key] = f'Translated {value}'
-    with open(os.path.join(sample_dir, 'translations.json'), 'w') as f:
-        json.dump(translation_target.translations, f, indent=4)
-    return translation_target
 
-def main():
-    parser = argparse.ArgumentParser(description='Run the localization pipeline')
-    parser.add_argument('--sample', action='store_true', help='Run the pipeline with a sample project')
-    args = parser.parse_args()
-    if args.sample:
-        sample_dir = 'sample'
-        os.makedirs(sample_dir, exist_ok=True)
-        with open(os.path.join(sample_dir, 'source.json'), 'w') as f:
-            json.dump({'hello': 'Hello', 'world': 'World'}, f)
-        translation_target = run_translation_pipeline(sample_dir)
-        print(f'Translation pipeline completed successfully. Translations saved to {sample_dir}/translations.json')
-        return 0
-    else:
-        print('Please provide a valid configuration')
-        return 1
+def load_config(env: Dict[str, str] | None = None) -> LocaleFlowConfig:
+    """
+    Load configuration for Locale‑Flow from environment variables.
 
-if __name__ == '__main__':
-    exit(main())
+    Parameters
+    ----------
+    env : dict or None
+        Optional dictionary to override os.environ (useful for tests).
+
+    Returns
+    -------
+    LocaleFlowConfig
+        Configuration object with validated values.
+
+    Raises
+    ------
+    KeyError
+        If required environment variables are missing.
+    ValueError
+        If timeout is not a positive integer.
+    """
+    if env is None:
+        env = os.environ
+
+    try:
+        api_key = env["LOCALE_FLOW_API_KEY"]
+    except KeyError as exc:
+        raise KeyError("Missing required environment variable: LOCALE_FLOW_API_KEY") from exc
+
+    try:
+        endpoint = env["LOCALE_FLOW_ENDPOINT"]
+    except KeyError as exc:
+        raise KeyError("Missing required environment variable: LOCALE_FLOW_ENDPOINT") from exc
+
+    timeout_str = env.get("LOCALE_FLOW_TIMEOUT", "30")
+    try:
+        timeout = int(timeout_str)
+        if timeout <= 0:
+            raise ValueError
+    except ValueError:
+        raise ValueError("LOCALE_FLOW_TIMEOUT must be a positive integer") from None
+
+    return LocaleFlowConfig(api_key=api_key, endpoint=endpoint, timeout=timeout)
+
+
+def get_default_config() -> LocaleFlowConfig:
+    """
+    Return a default configuration using environment variables.
+    """
+    return load_config()

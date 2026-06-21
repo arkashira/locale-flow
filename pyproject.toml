@@ -1,15 +1,11 @@
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
-[tool.poetry]
+[project]
 name = "locale-flow"
-version = "1.0.0"
-description = ""
-authors = ["Your Name"]
+version = "0.1.0"
+description = "A minimal helper for integrating Locale‑Flow into CI pipelines."
+readme = "README.md"
+requires-python = ">=3.8"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]

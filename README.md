@@ -1,7 +1,11 @@
-# locale-flow
+# Locale‑Flow Quick‑Start
 
-A tool for running the localization pipeline.
+Locale‑Flow is a lightweight helper that validates your environment configuration before running your CI pipeline.  
+This repository contains a small Python module that checks the required environment variables and provides a convenient data class.
 
-## Quick Start
+## Prerequisites
 
-To run the localization pipeline with a sample project, use the following command:
+- Python 3.8 or newer
+- `pip install -e .` (optional, for local development)
+
+## Installation
