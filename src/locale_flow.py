@@ -1,62 +1,29 @@
-import os
+import json
 from dataclasses import dataclass
-from typing import Dict, Any
-
+from typing import Dict
 
 @dataclass
-class LocaleFlowConfig:
-    api_key: str
-    endpoint: str
-    timeout: int = 30  # default timeout in seconds
+class TranslationSettings:
+    translation_memory: bool
+    terminology: bool
+    workflow: str
 
+class LocaleFlow:
+    def __init__(self):
+        self.settings = None
 
-def load_config(env: Dict[str, str] | None = None) -> LocaleFlowConfig:
-    """
-    Load configuration for Locale‑Flow from environment variables.
+    def configure_translation_settings(self, translation_memory: bool, terminology: bool, workflow: str) -> TranslationSettings:
+        self.settings = TranslationSettings(translation_memory, terminology, workflow)
+        return self.settings
 
-    Parameters
-    ----------
-    env : dict or None
-        Optional dictionary to override os.environ (useful for tests).
+    def save_settings(self) -> Dict:
+        if self.settings is None:
+            raise ValueError("Settings not configured")
+        return self.settings.__dict__
 
-    Returns
-    -------
-    LocaleFlowConfig
-        Configuration object with validated values.
-
-    Raises
-    ------
-    KeyError
-        If required environment variables are missing.
-    ValueError
-        If timeout is not a positive integer.
-    """
-    if env is None:
-        env = os.environ
-
-    try:
-        api_key = env["LOCALE_FLOW_API_KEY"]
-    except KeyError as exc:
-        raise KeyError("Missing required environment variable: LOCALE_FLOW_API_KEY") from exc
-
-    try:
-        endpoint = env["LOCALE_FLOW_ENDPOINT"]
-    except KeyError as exc:
-        raise KeyError("Missing required environment variable: LOCALE_FLOW_ENDPOINT") from exc
-
-    timeout_str = env.get("LOCALE_FLOW_TIMEOUT", "30")
-    try:
-        timeout = int(timeout_str)
-        if timeout <= 0:
-            raise ValueError
-    except ValueError:
-        raise ValueError("LOCALE_FLOW_TIMEOUT must be a positive integer") from None
-
-    return LocaleFlowConfig(api_key=api_key, endpoint=endpoint, timeout=timeout)
-
-
-def get_default_config() -> LocaleFlowConfig:
-    """
-    Return a default configuration using environment variables.
-    """
-    return load_config()
+    def validate_settings(self, settings: Dict) -> bool:
+        required_keys = ["translation_memory", "terminology", "workflow"]
+        for key in required_keys:
+            if key not in settings:
+                return False
+        return True

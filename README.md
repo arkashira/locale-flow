@@ -1,11 +1,14 @@
-# Locale‑Flow Quick‑Start
+# Locale Flow
 
-Locale‑Flow is a lightweight helper that validates your environment configuration before running your CI pipeline.  
-This repository contains a small Python module that checks the required environment variables and provides a convenient data class.
+A Python project for configuring translation settings.
 
-## Prerequisites
+## Usage
 
-- Python 3.8 or newer
-- `pip install -e .` (optional, for local development)
+1. Create an instance of `LocaleFlow`.
+2. Configure translation settings using `configure_translation_settings`.
+3. Save settings using `save_settings`.
+4. Validate settings using `validate_settings`.
 
-## Installation
+## Testing
+
+Run tests using `pytest`.
